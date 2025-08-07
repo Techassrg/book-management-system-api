@@ -1,4 +1,4 @@
-package com.asmt.Book_Management_System
+package com.asmt.bookmanagementsystem
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

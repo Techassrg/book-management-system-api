@@ -1,8 +1,9 @@
-package com.asmt.Book_Management_System.service
+package com.asmt.bookmanagementsystem.service
 
-import com.asmt.Book_Management_System.dto.BookRequest
-import com.asmt.Book_Management_System.entity.Book
-import com.asmt.Book_Management_System.repository.BookRepository
+import com.asmt.bookmanagementsystem.dto.BookRequest
+import com.asmt.bookmanagementsystem.entity.Book
+import com.asmt.bookmanagementsystem.entity.BookStatus
+import com.asmt.bookmanagementsystem.repository.BookRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
@@ -20,6 +21,14 @@ class BookService(private val bookRepository: BookRepository) {
             throw IllegalArgumentException("Author name cannot be empty")
         }
         return bookRepository.findByAuthor(author.trim())
+    }
+
+    /**
+     * Get books by status
+     * Uses index on status column for better performance
+     */
+    fun getBooksByStatus(status: BookStatus): List<Book> {
+        return bookRepository.findByStatus(status)
     }
 
     /**
@@ -41,9 +50,21 @@ class BookService(private val bookRepository: BookRepository) {
         val book = Book(
             title = request.title.trim(),
             author = request.author.trim(),
-            publishedDate = date
+            publishedDate = date,
+            status = request.status
         )
         
         return bookRepository.save(book)
+    }
+
+    /**
+     * Update book status
+     */
+    fun updateBookStatus(id: Long, status: BookStatus): Book {
+        val book = bookRepository.findById(id)
+            .orElseThrow { IllegalArgumentException("Book not found with id: $id") }
+        
+        val updatedBook = book.copy(status = status)
+        return bookRepository.save(updatedBook)
     }
 }
